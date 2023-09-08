@@ -1,4 +1,5 @@
 import gradio as gr
+import os
 import random
 import time
 
@@ -44,15 +45,16 @@ def sales_chat(message, history):
 def launch_gradio():
     demo = gr.ChatInterface(
         fn=sales_chat,
-        title="房产销售",
+        title="智能销售客服",
         # retry_btn=None,
         # undo_btn=None,
-        chatbot=gr.Chatbot(height=600),
+        chatbot=gr.Chatbot(height=400),
     )
 
     demo.launch(share=True, server_name="0.0.0.0")
 
 if __name__ == "__main__":
+    os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_KEY"
     # 初始化房产销售机器人
     initialize_sales_bot()
     # 启动 Gradio 服务

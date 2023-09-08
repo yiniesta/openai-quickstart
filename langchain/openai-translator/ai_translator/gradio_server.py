@@ -7,12 +7,21 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from utils import ArgumentParser, LOG
 from translator import PDFTranslator, TranslationConfig
 
+def get_style_tip(style):
+    if style == "小说":
+        return "Please translate the following content in the style of a novel."
+    elif style == "新闻":
+        return "Please translate the following content in the style of a news article."
+    elif style == "作家":
+        return "Please translate the following content in the style of a writer."
+    else:
+        return "Please translate the following content."
 
-def translation(input_file, source_language, target_language):
-    LOG.debug(f"[翻译任务]\n源文件: {input_file.name}\n源语言: {source_language}\n目标语言: {target_language}")
+def translation(input_file, style, source_language, target_language):
+    LOG.debug(f"[翻译任务]\n源文件: {input_file.name}\n风格: {style}\n源语言: {source_language}\n目标语言: {target_language}")
 
     output_file_path = Translator.translate_pdf(
-        input_file.name, source_language=source_language, target_language=target_language)
+        input_file.name, style_tip=get_style_tip(style), source_language=source_language, target_language=target_language)
 
     return output_file_path
 
@@ -23,6 +32,7 @@ def launch_gradio():
         title="OpenAI-Translator v2.0(PDF 电子书翻译工具)",
         inputs=[
             gr.File(label="上传PDF文件"),
+            gr.inputs.Dropdown(label="风格选择", choices=["无", "小说", "新闻", "作家"], default="无"),
             gr.Textbox(label="源语言（默认：英文）", placeholder="English", value="English"),
             gr.Textbox(label="目标语言（默认：中文）", placeholder="Chinese", value="Chinese")
         ],
@@ -48,6 +58,8 @@ def initialize_translator():
 
 
 if __name__ == "__main__":
+    os.environ["OPENAI_API_KEY"] = "YOUR_OPENAI_KEY"
+
     # 初始化 translator
     initialize_translator()
     # 启动 Gradio 服务
